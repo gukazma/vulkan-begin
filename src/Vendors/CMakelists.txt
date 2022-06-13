@@ -5,3 +5,16 @@ if(NOT TARGET gtest_main)
     set_target_properties(gmock PROPERTIES FOLDER Vendors/googletest)
     set_target_properties(gmock_main PROPERTIES FOLDER Vendors/googletest)
 endif()
+
+
+if(NOT TARGET glfw)
+    option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+    option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+    option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+    option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+    option(GLFW_INSTALL "Generate installation target" OFF)
+    add_subdirectory(glfw)
+    set_target_properties(glfw PROPERTIES FOLDER Vendors/glfw)
+    set_target_properties(update_mappings PROPERTIES FOLDER Vendors/glfw)
+endif()
+
