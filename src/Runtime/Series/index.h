@@ -6,4 +6,9 @@ namespace Series
 	{
 		int main();
 	}
+
+	namespace b_base_code
+	{
+		int main();
+	}
 }

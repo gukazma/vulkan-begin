@@ -1,4 +1,4 @@
-set(TARGET_NAME a_dev_envir)
+set(TARGET_NAME b_base_code)
 # just for qt
 # set(CMAKE_AUTOUIC ON)
 # set(CMAKE_AUTOMOC ON)
