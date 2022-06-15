@@ -11,4 +11,9 @@ namespace Series
 	{
 		int main();
 	}
+
+	namespace c_instance
+	{
+		int main();
+	}
 }

@@ -1,2 +1,3 @@
 add_subdirectory(00_dev_envir)
 add_subdirectory(01_base_code)
+add_subdirectory(02_instance)
