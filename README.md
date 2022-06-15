@@ -8,7 +8,7 @@ learn and test vulkan with https://github.com/Overv/VulkanTutorial
 ```bash
 # clone repository and submodule
 
-git clone --recursive https://github.com/StoneHappy/multi-threading-begin.git
+git clone --recursive https://github.com/StoneHappy/vulkan-begin.git
 
 # create build dir
 
