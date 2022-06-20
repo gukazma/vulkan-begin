@@ -25,4 +25,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace e_physical_devices_and_queue_families
+	{
+		int main();
+	}
 }
