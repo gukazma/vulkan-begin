@@ -25,7 +25,7 @@ cmake ..
 
 * Step3: set setup project
 
-    Set one of ``test`` as start up project.
+    Set one of ``test`` as start up project. pass cmd parameter `--gtest_filter=some test`
 
 * Step4: run test program
 
