@@ -29,4 +29,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace f_logical_device_and_queues
+	{
+		int main();
+	}
 }
