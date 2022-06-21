@@ -68,6 +68,8 @@ namespace Series
 			}
 
 			void cleanup() {
+				vkDestroyDevice(m_Device, nullptr);
+
 				if (enableValidationLayers) {
 					DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
 				}
