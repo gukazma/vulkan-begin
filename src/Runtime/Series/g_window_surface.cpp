@@ -78,7 +78,7 @@ namespace Series
 				if (enableValidationLayers) {
 					DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
 				}
-
+				vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
 				vkDestroyInstance(m_VulkanInstance, nullptr);
 				glfwDestroyWindow(m_Window);
 				glfwTerminate();
