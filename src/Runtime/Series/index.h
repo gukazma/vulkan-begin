@@ -33,4 +33,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace g_window_surface
+	{
+		int main();
+	}
 }

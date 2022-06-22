@@ -31,3 +31,8 @@ TEST(vulkanSeries, f_logical_device_and_queues)
 {
 	EXPECT_EQ(Series::f_logical_device_and_queues::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, g_window_surface)
+{
+	EXPECT_EQ(Series::g_window_surface::main(), EXIT_SUCCESS);
+}
