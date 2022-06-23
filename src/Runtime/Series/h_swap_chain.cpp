@@ -32,12 +32,22 @@ namespace Series
 					return	graphicsFamily.has_value() && presentFamily.has_value();
 				}
 			};
+
+			struct SwapChainSupportDetails
+			{
+				VkSurfaceCapabilitiesKHR capabilities;
+				std::vector<VkSurfaceFormatKHR> fromats;
+				std::vector<VkPresentModeKHR> presentModes;
+			};
 		private:
 			GLFWwindow* m_Window;
 			const int m_Width = 800;
 			const int m_Height = 600;
 			const std::vector<const	 char*> m_ValidationLayers = {
 				"VK_LAYER_KHRONOS_validation"
+			};
+			const std::vector<const char*> m_DeviceExtensions = {
+				VK_KHR_SWAPCHAIN_EXTENSION_NAME
 			};
 			VkDebugUtilsMessengerEXT m_DebugMessenger;
 			VkInstance m_VulkanInstance;
@@ -62,6 +72,7 @@ namespace Series
 				createSurface();
 				pickPhysicalDevice();
 				createLogicalDevice();
+				createSwapChain();
 			}
 
 			void mainLoop() {
@@ -82,7 +93,7 @@ namespace Series
 				glfwDestroyWindow(m_Window);
 				glfwTerminate();
 			}
-
+			// **************************** create instance **************************************
 			void createInstance() {
 				// if enable ValidataionLayers but check found not support, throw error!
 				if (enableValidationLayers && !checkValidationLayerSupport())
@@ -123,6 +134,26 @@ namespace Series
 				}
 			}
 
+
+			std::vector<const char*> getRequiredExtensions()
+			{
+				uint32_t glfwExtensionCount = 0;
+				const char** glfwExtensions;
+				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+				std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+
+				if (enableValidationLayers)
+				{
+					extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+				}
+
+				return extensions;
+			}
+
+			// **************************** create instance **************************************
+			
+			// **************************** setup validation layer *******************************
 			// Check validation layer whether support?
 			bool checkValidationLayerSupport() {
 				uint32_t layerCount;
@@ -150,21 +181,25 @@ namespace Series
 				return true;
 			}
 
-			std::vector<const char*> getRequiredExtensions()
+			// **************************** setup validation layer *******************************
+			bool checkDeviceExtensionSupport(VkPhysicalDevice device)
 			{
-				uint32_t glfwExtensionCount = 0;
-				const char** glfwExtensions;
-				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+				uint32_t extensionCount = 0;
+				vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
-				std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+				std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+				vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-				if (enableValidationLayers)
+				std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
+
+				for (auto& extension : availableExtensions)
 				{
-					extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+					requiredExtensions.erase(extension.extensionName);
 				}
 
-				return extensions;
+				return requiredExtensions.empty();
 			}
+
 
 			static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 				VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -212,7 +247,20 @@ namespace Series
 				createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 				createInfo.pfnUserCallback = debugCallback;
 			}
+			// **************************** setup validation layer *******************************
 
+
+			// **************************** create surface *******************************
+			void createSurface()
+			{
+				if (glfwCreateWindowSurface(m_VulkanInstance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
+				{
+					throw std::runtime_error("failed to create window surface!");
+				}
+			}
+			// **************************** create surface *******************************
+
+			// **************************** pick physical device *************************
 			void pickPhysicalDevice() {
 				uint32_t deviceCount = 0;
 				vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, nullptr);
@@ -238,7 +286,17 @@ namespace Series
 			bool isDeviceSuitable(VkPhysicalDevice device) {
 				QueueFamilyIndices indices = findQueueFamilies(device);
 
-				return indices.isComplete();
+				bool extensionsSupported = checkDeviceExtensionSupport(device);
+
+				bool swapChainAdequate = false;
+				if (extensionsSupported)
+				{
+					SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+
+					swapChainAdequate = !swapChainSupport.fromats.empty() && !swapChainSupport.presentModes.empty();
+				}
+
+				return indices.isComplete() && extensionsSupported && swapChainAdequate;
 			}
 			int rateDeviceSuitability(VkPhysicalDevice device) {
 				VkPhysicalDeviceProperties deviceProperties;
@@ -299,7 +357,9 @@ namespace Series
 
 				return indices;
 			}
+			// **************************** pick physical device *************************
 
+			// **************************** create logical device ************************
 			void createLogicalDevice() {
 				QueueFamilyIndices indices = findQueueFamilies(m_PhysicalDevice);
 
@@ -324,7 +384,8 @@ namespace Series
 				createInfo.queueCreateInfoCount = queueCreateInfos.size();
 				createInfo.pQueueCreateInfos = queueCreateInfos.data();
 				createInfo.pEnabledFeatures = &deviceFeatures;
-				createInfo.enabledExtensionCount = 0;
+				createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
+				createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 
 				if (enableValidationLayers)
 				{
@@ -344,14 +405,100 @@ namespace Series
 				vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
 				vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_PresentQueue);
 			}
+			// **************************** create logical device ************************
 
-			void createSurface()
-			{
-				if (glfwCreateWindowSurface(m_VulkanInstance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
+			// **************************** create swap chain ****************************
+			SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
+				SwapChainSupportDetails details;
+
+				// get surface capabilities ( max/min image )
+				vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface, &details.capabilities);
+
+				// get surface format (RGB...)
+				uint32_t formatCount = 0;
+				vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, nullptr);
+
+				if (formatCount != 0)
 				{
-					throw std::runtime_error("failed to create window surface!");
+					details.fromats.resize(formatCount);
+					vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, details.fromats.data());
+				}
+
+				// get surface present mode (imediate / fifo ...)
+				uint32_t presentModeCount = 0;
+				vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, nullptr);
+
+				if (presentModeCount != 0)
+				{
+					details.presentModes.resize(presentModeCount);
+					vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, details.presentModes.data());
+				}
+
+				return details;
+			}
+
+			VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+				for (const auto& avaiableFormat : availableFormats)
+				{
+					if (avaiableFormat.format == VK_FORMAT_R8G8B8A8_SRGB && avaiableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+					{
+						return avaiableFormat;
+					}
+				}
+
+				return availableFormats[0];
+			}
+
+			VkPresentModeKHR chooseSwapPresenMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+
+				VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
+
+				for (const auto& availablePresentMode : availablePresentModes)
+				{
+					if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+					{
+						return availablePresentMode;
+					}
+					else if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+					{
+						bestMode = availablePresentMode;
+					}
+				}
+				return bestMode;
+			}
+
+			VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+				if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+				{
+					return capabilities.currentExtent;
+				}
+				else
+				{
+					VkExtent2D actualExtent = { m_Width, m_Height };
+
+					actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
+					actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
+
+					return actualExtent;
 				}
 			}
+
+			void createSwapChain() {
+				SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_PhysicalDevice);
+				VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.fromats);
+				VkPresentModeKHR presentMode = chooseSwapPresenMode(swapChainSupport.presentModes);
+				VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+
+				uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+				if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
+				{
+					imageCount = swapChainSupport.capabilities.maxImageCount;
+				}
+
+
+			}
+			// **************************** create swap chain ****************************
+
 		};
 
 		int main()
