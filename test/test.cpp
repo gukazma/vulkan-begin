@@ -36,3 +36,8 @@ TEST(vulkanSeries, g_window_surface)
 {
 	EXPECT_EQ(Series::g_window_surface::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, h_swap_chain)
+{
+	EXPECT_EQ(Series::h_swap_chain::main(), EXIT_SUCCESS);
+}

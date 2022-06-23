@@ -37,4 +37,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace h_swap_chain
+	{
+		int main();
+	}
 }
