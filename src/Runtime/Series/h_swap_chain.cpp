@@ -57,6 +57,9 @@ namespace Series
 			VkQueue m_PresentQueue;
 			VkSurfaceKHR m_Surface;
 			VkSwapchainKHR m_SwapChain;
+			std::vector<VkImage> m_SwapChainImages;
+			VkFormat m_SwapChainImageFormat;
+			VkExtent2D m_SwapChainExtent;
 
 			void initWindow() {
 				glfwInit();
@@ -533,6 +536,13 @@ namespace Series
 				{
 					throw std::runtime_error("failed to create swap chain!");
 				}
+
+				vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, nullptr);
+				m_SwapChainImages.resize(imageCount);
+				vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, m_SwapChainImages.data());
+
+				m_SwapChainImageFormat = surfaceFormat.format;
+				m_SwapChainExtent = extent;
 			}
 			// **************************** create swap chain ****************************
 
