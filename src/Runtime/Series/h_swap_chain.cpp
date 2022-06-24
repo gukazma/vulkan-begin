@@ -56,6 +56,7 @@ namespace Series
 			VkQueue m_GraphicsQueue;
 			VkQueue m_PresentQueue;
 			VkSurfaceKHR m_Surface;
+			VkSwapchainKHR m_SwapChain;
 
 			void initWindow() {
 				glfwInit();
@@ -83,6 +84,7 @@ namespace Series
 			}
 
 			void cleanup() {
+				vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
 				vkDestroyDevice(m_Device, nullptr);
 
 				if (enableValidationLayers) {
@@ -505,6 +507,32 @@ namespace Series
 				createInfo.imageArrayLayers = 1;
 				createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
+				QueueFamilyIndices indices = findQueueFamilies(m_PhysicalDevice);
+				uint32_t queueFamilyIndices[] = {(uint32_t)indices.graphicsFamily.value(), (uint32_t) indices.presentFamily.value() };
+
+				if (indices.graphicsFamily != indices.presentFamily)
+				{
+					createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+					createInfo.queueFamilyIndexCount = 2;
+					createInfo.pQueueFamilyIndices = queueFamilyIndices;
+				}
+				else
+				{
+					createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+					createInfo.queueFamilyIndexCount = 0;
+					createInfo.pQueueFamilyIndices = nullptr;
+				}
+
+				createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+				createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+				createInfo.presentMode = presentMode;
+				createInfo.clipped = VK_TRUE;
+				createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+				if (vkCreateSwapchainKHR(m_Device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
+				{
+					throw std::runtime_error("failed to create swap chain!");
+				}
 			}
 			// **************************** create swap chain ****************************
 
