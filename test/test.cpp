@@ -41,3 +41,8 @@ TEST(vulkanSeries, h_swap_chain)
 {
 	EXPECT_EQ(Series::h_swap_chain::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, i_image_views)
+{
+	EXPECT_EQ(Series::i_image_views::main(), EXIT_SUCCESS);
+}

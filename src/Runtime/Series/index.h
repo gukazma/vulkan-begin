@@ -41,4 +41,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace i_image_views
+	{
+		int main();
+	}
 }
