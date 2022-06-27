@@ -46,3 +46,8 @@ TEST(vulkanSeries, i_image_views)
 {
 	EXPECT_EQ(Series::i_image_views::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, j_shader_modules)
+{
+	EXPECT_EQ(Series::j_shader_modules::main(), EXIT_SUCCESS);
+}

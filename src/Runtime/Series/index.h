@@ -45,4 +45,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace j_shader_modules
+	{
+		int main();
+	}
 }

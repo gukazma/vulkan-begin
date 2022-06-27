@@ -25,4 +25,5 @@ target_include_directories(
   PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
   $<BUILD_INTERFACE:${Vulkan_INCLUDE_DIRS}/>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/Shader/generated/cpp/>
 )
