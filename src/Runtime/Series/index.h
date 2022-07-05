@@ -49,4 +49,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace k_fixed_functions
+	{
+		int main();
+	}
 }

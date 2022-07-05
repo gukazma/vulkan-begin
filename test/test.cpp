@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <Series/index.h>
 
-
 TEST(vulkanSeries, a_dev_envir)
 {
 	Series::a_div_envir::main();
@@ -50,4 +49,9 @@ TEST(vulkanSeries, i_image_views)
 TEST(vulkanSeries, j_shader_modules)
 {
 	EXPECT_EQ(Series::j_shader_modules::main(), EXIT_SUCCESS);
+}
+
+TEST(vulkanSeries, k_fixed_functions)
+{
+	EXPECT_EQ(Series::k_fixed_functions::main(), EXIT_SUCCESS);
 }
