@@ -65,3 +65,8 @@ TEST(vulkanSeries, m_conclusion)
 {
 	EXPECT_EQ(Series::m_conclusion::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, n_create_frame_buffers)
+{
+	EXPECT_EQ(Series::n_create_frame_buffers::main(), EXIT_SUCCESS);
+}

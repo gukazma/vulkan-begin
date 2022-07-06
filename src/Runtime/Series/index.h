@@ -61,4 +61,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace n_create_frame_buffers
+	{
+		int main();
+	}
 }
