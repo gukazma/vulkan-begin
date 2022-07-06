@@ -55,3 +55,8 @@ TEST(vulkanSeries, k_fixed_functions)
 {
 	EXPECT_EQ(Series::k_fixed_functions::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, l_render_passes)
+{
+	EXPECT_EQ(Series::l_render_passes::main(), EXIT_SUCCESS);
+}

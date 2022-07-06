@@ -53,4 +53,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace l_render_passes
+	{
+		int main();
+	}
 }
