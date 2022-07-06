@@ -589,7 +589,7 @@ namespace Series
 				fragShaderStageInfo.pName = "main";
 
 				VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
-				
+
 
 				// vertex input
 				VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
@@ -606,7 +606,7 @@ namespace Series
 				VkViewport viewport = {};
 				viewport.x = 0.0f;
 				viewport.y = 0.0f;
-				viewport.width = (float) m_SwapChainExtent.width;
+				viewport.width = (float)m_SwapChainExtent.width;
 				viewport.height = (float)m_SwapChainExtent.height;
 				viewport.minDepth = 0.0f;
 				viewport.maxDepth = 1.0f;
@@ -614,7 +614,7 @@ namespace Series
 				VkRect2D scissor = {};
 				scissor.offset = { 0, 0 };
 				scissor.extent = m_SwapChainExtent;
-				
+
 				VkPipelineViewportStateCreateInfo viewportState{};
 				viewportState.viewportCount = 1;
 				viewportState.scissorCount = 1;
@@ -691,8 +691,6 @@ namespace Series
 
 			// **************************** cleanup **************************************
 			void cleanup() {
-				vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
-
 				for (auto& imageview : m_SwapChainImageViews)
 				{
 					vkDestroyImageView(m_Device, imageview, nullptr);
