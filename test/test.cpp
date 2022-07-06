@@ -60,3 +60,8 @@ TEST(vulkanSeries, l_render_passes)
 {
 	EXPECT_EQ(Series::l_render_passes::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, m_conclusion)
+{
+	EXPECT_EQ(Series::m_conclusion::main(), EXIT_SUCCESS);
+}

@@ -57,4 +57,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace m_conclusion
+	{
+		int main();
+	}
 }
