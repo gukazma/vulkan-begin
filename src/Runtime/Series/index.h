@@ -65,4 +65,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace o_command_buffers
+	{
+		int main();
+	}
 }

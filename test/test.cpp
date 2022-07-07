@@ -70,3 +70,8 @@ TEST(vulkanSeries, n_create_frame_buffers)
 {
 	EXPECT_EQ(Series::n_create_frame_buffers::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, o_command_buffers)
+{
+	EXPECT_EQ(Series::o_command_buffers::main(), EXIT_SUCCESS);
+}
