@@ -104,6 +104,8 @@ namespace Series
 					glfwPollEvents();
 					drawFrame();
 				}
+
+				vkDeviceWaitIdle(m_Device);
 			}
 
 
