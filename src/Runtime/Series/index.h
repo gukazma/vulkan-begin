@@ -69,4 +69,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace p_rendering_presentation
+	{
+		int main();
+	}
 }

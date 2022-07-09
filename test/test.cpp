@@ -75,3 +75,8 @@ TEST(vulkanSeries, o_command_buffers)
 {
 	EXPECT_EQ(Series::o_command_buffers::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, p_rendering_presentation)
+{
+	EXPECT_EQ(Series::p_rendering_presentation::main(), EXIT_SUCCESS);
+}
