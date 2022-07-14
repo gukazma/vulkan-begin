@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <map>
 #include <optional>
@@ -577,9 +578,9 @@ namespace Series
 				colorAttachment.format = m_SwapChainImageFormat;
 				colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 
-				// äÖÈ¾Ç°Çå¿ÕÖ¡»º´æ
+				// ï¿½ï¿½È¾Ç°ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½
 				colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-				// äÖÈ¾ºó´æ´¢Ö¡»º´æ
+				// ï¿½ï¿½È¾ï¿½ï¿½æ´¢Ö¡ï¿½ï¿½ï¿½ï¿½
 				colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 				
 				colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;

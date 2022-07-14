@@ -27,6 +27,6 @@ compile_shader(
   "${TARGET_NAME}"
   "${SHADER_INCLUDE_FOLDER}"
   "${GENERATED_SHADER_FOLDER}"
-  "glslangValidator.exe")
+  "glslangValidator")
 
 set_target_properties("${TARGET_NAME}" PROPERTIES FOLDER "${PROJECT_NAME}" )

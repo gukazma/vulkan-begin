@@ -3,7 +3,7 @@
 learn and test vulkan with https://github.com/Overv/VulkanTutorial
 
 ## how to use it
-
+### Windows
 * Step1: generate build project
 ```bash
 # clone repository and submodule
@@ -21,7 +21,9 @@ cmake ..
 ```
 * Step2: open build project
 
-    Open ``vulkan-begin.sln`` file in ``build`` dir by ``VS``.
+Open ``vulkan-begin.sln`` file in ``build`` dir by ``VS``.
+
+**build  ``shaderCompile`` first!!!**
 
 * Step3: set setup project
 
@@ -30,3 +32,12 @@ cmake ..
 * Step4: run test program
 
     Run without debug project.
+
+### Ubuntu
+
+```bash
+sudo apt-get install libsdl2-dev libx11-dev
+
+clion .
+```
+**build  ``shaderCompile`` first!!!**
