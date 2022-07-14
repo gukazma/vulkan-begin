@@ -4,6 +4,12 @@ learn and test vulkan with https://github.com/Overv/VulkanTutorial
 
 ## how to use it
 ### Windows
+download [vulkanSDK](https://vulkan.lunarg.com/sdk/home#windows)
+
+install it
+
+add bin dir to env path
+
 * Step1: generate build project
 ```bash
 # clone repository and submodule
@@ -36,7 +42,9 @@ Open ``vulkan-begin.sln`` file in ``build`` dir by ``VS``.
 ### Ubuntu
 
 ```bash
-sudo apt-get install libsdl2-dev libx11-dev
+sudo apt update
+
+sudo apt-get install libsdl2-dev libx11-dev vulkan-sdk
 
 clion .
 ```
