@@ -576,6 +576,7 @@ namespace Series
 					createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 					createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 					createInfo.subresourceRange.baseMipLevel = 0;
+					createInfo.subresourceRange.levelCount = 1;
 					createInfo.subresourceRange.baseArrayLayer = 0;
 					createInfo.subresourceRange.layerCount = 1;
 					if (vkCreateImageView(m_Device, &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS)
@@ -654,7 +655,7 @@ namespace Series
 
 				// vertex input
 				VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-				vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+				vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 				vertexInputInfo.vertexBindingDescriptionCount = 0;
 				vertexInputInfo.vertexAttributeDescriptionCount = 0;
 
@@ -677,6 +678,7 @@ namespace Series
 				scissor.extent = m_SwapChainExtent;
 
 				VkPipelineViewportStateCreateInfo viewportState{};
+				viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 				viewportState.viewportCount = 1;
 				viewportState.scissorCount = 1;
 				viewportState.pViewports = &viewport;
@@ -701,6 +703,7 @@ namespace Series
 				colorBlendAttachment.blendEnable = VK_FALSE;
 
 				VkPipelineColorBlendStateCreateInfo colorBlending{};
+				colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 				colorBlending.logicOpEnable = VK_FALSE;
 				colorBlending.logicOp = VK_LOGIC_OP_COPY;
 				colorBlending.attachmentCount = 1;
@@ -712,7 +715,7 @@ namespace Series
 
 				VkDynamicState dynamicStates[] = {
 					VK_DYNAMIC_STATE_VIEWPORT,
-					VK_DYNAMIC_STATE_LINE_WIDTH
+					VK_DYNAMIC_STATE_SCISSOR
 				};
 
 				VkPipelineDynamicStateCreateInfo dynamicState = {};
@@ -879,24 +882,30 @@ namespace Series
 
 			void createSemaphores()
 			{
-				VkSemaphoreCreateInfo semaphoreInfo = {};
+				VkSemaphoreCreateInfo semaphoreInfo{};
 				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-				if (
-					vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore)!=VK_SUCCESS || \
-					vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore) != VK_SUCCESS
-					)
-				{
-					throw std::runtime_error("failed to create semaphores!");
+
+				VkFenceCreateInfo fenceInfo{};
+				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+				if (vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore) != VK_SUCCESS ||
+					vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore) != VK_SUCCESS ||
+					vkCreateFence(m_Device, &fenceInfo, nullptr, &inFlightFence) != VK_SUCCESS) {
+					throw std::runtime_error("failed to create synchronization objects for a frame!");
 				}
 			}
 
 
 			void drawFrame()
 			{
+				vkWaitForFences(m_Device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+				vkResetFences(m_Device, 1, &inFlightFence);
+
 				uint32_t imageIndex;
 				vkAcquireNextImageKHR(m_Device, m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
-				vkResetCommandBuffer(m_CommandBuffer, 0);
+				vkResetCommandBuffer(m_CommandBuffer, /*VkCommandBufferResetFlagBits*/ 0);
 				recordCommandBuffer(m_CommandBuffer, imageIndex);
 
 				VkSubmitInfo submitInfo{};
@@ -915,7 +924,7 @@ namespace Series
 				submitInfo.signalSemaphoreCount = 1;
 				submitInfo.pSignalSemaphores = signalSemaphores;
 
-				if (vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) {
+				if (vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, inFlightFence) != VK_SUCCESS) {
 					throw std::runtime_error("failed to submit draw command buffer!");
 				}
 
@@ -937,6 +946,7 @@ namespace Series
 			void cleanup() {
 				vkDestroySemaphore(m_Device, m_RenderFinishedSemaphore, nullptr);
 				vkDestroySemaphore(m_Device, m_ImageAvailableSemaphore, nullptr);
+				vkDestroyFence(m_Device, inFlightFence, nullptr);
 
 				vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
 
