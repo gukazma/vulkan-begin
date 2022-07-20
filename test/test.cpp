@@ -80,3 +80,8 @@ TEST(vulkanSeries, p_rendering_presentation)
 {
 	EXPECT_EQ(Series::p_rendering_presentation::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, q_swap_chain_recreation)
+{
+	EXPECT_EQ(Series::q_swap_chain_recreation::main(), EXIT_SUCCESS);
+}

@@ -73,4 +73,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace q_swap_chain_recreation
+	{
+		int main();
+	}
 }
