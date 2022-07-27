@@ -85,3 +85,8 @@ TEST(vulkanSeries, q_swap_chain_recreation)
 {
 	EXPECT_EQ(Series::q_swap_chain_recreation::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, r_descriptor_layout_buffer)
+{
+	EXPECT_EQ(Series::r_descriptor_layout_buffer::main(), EXIT_SUCCESS);
+}
