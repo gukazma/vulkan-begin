@@ -928,7 +928,7 @@ namespace Series
 				}
 
 				vkDeviceWaitIdle(m_Device);
-
+				cleanupSwapChain();
 				createSwapChain();
 				createImageViews();
 				createFramebuffers();

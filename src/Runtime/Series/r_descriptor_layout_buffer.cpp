@@ -15,7 +15,7 @@
 #include "j_shader_modules_frag.h"
 namespace Series
 {
-	namespace r_descriptor_layout_buffer
+	namespace q_swap_chain_recreation
 	{
 		class VulkanApplication
 		{
@@ -920,7 +920,6 @@ namespace Series
 			}
 
 			void recreateSwapChain() {
-
 				int width = 0, height = 0;
 				glfwGetFramebufferSize(m_Window, &width, &height);
 				while (width == 0 || height == 0) {
@@ -929,12 +928,9 @@ namespace Series
 				}
 
 				vkDeviceWaitIdle(m_Device);
-
 				cleanupSwapChain();
 				createSwapChain();
 				createImageViews();
-				createRenderPass();
-				createGraphicsPipeline();
 				createFramebuffers();
 				createCommandBuffers();
 			}
