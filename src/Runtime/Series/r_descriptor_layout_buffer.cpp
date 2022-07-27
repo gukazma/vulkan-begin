@@ -15,7 +15,7 @@
 #include "j_shader_modules_frag.h"
 namespace Series
 {
-	namespace q_swap_chain_recreation
+	namespace r_descriptor_layout_buffer
 	{
 		class VulkanApplication
 		{
