@@ -77,4 +77,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace r_descriptor_layout_buffer
+	{
+		int main();
+	}
 }
