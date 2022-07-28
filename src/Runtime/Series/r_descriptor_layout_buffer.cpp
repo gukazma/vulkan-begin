@@ -13,10 +13,16 @@
 #include "index.h"
 #include "j_shader_modules_vert.h"
 #include "j_shader_modules_frag.h"
+#include <glm/glm.hpp>
 namespace Series
 {
 	namespace r_descriptor_layout_buffer
 	{
+		struct Vertex
+		{
+			glm::vec2 Pos;
+			glm::vec3 Color;
+		};
 		class VulkanApplication
 		{
 		public:
@@ -77,6 +83,11 @@ namespace Series
 			const int MAX_FRAMES_IN_FLIGHT = 2;
 			size_t m_CurrentFrame = 0;
 			bool m_FramebufferResized = false;
+			std::vector<Vertex> m_Vertices = {
+					{{	0.0f,		-0.5f}, {1.0f, 0.0f, 0.0f}},
+					{{	0.5f,		0.5f},	{0.0f, 1.0f, 0.0f}},
+					{{	-0.5f,		0.5f},	{0.0f, 0.0f, 1.0f}}
+			};
 
 			void initWindow() {
 				glfwInit();
