@@ -90,3 +90,8 @@ TEST(vulkanSeries, r_descriptor_layout_buffer)
 {
 	EXPECT_EQ(Series::r_descriptor_layout_buffer::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, s_staging_buffer)
+{
+	EXPECT_EQ(Series::s_staging_buffer::main(), EXIT_SUCCESS);
+}

@@ -81,4 +81,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace s_staging_buffer
+	{
+		int main();
+	}
 }
