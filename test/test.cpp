@@ -95,3 +95,8 @@ TEST(vulkanSeries, s_staging_buffer)
 {
 	EXPECT_EQ(Series::s_staging_buffer::main(), EXIT_SUCCESS);
 }
+
+TEST(vulkanSeries, t_index_buffer)
+{
+	EXPECT_EQ(Series::t_index_buffer::main(), EXIT_SUCCESS);
+}

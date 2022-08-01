@@ -85,4 +85,8 @@ namespace Series
 	{
 		int main();
 	}
+	namespace t_index_buffer
+	{
+		int main();
+	}
 }
