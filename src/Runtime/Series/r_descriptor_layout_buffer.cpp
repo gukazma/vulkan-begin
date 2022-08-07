@@ -11,18 +11,44 @@
 #include <algorithm>
 #include <set>
 #include "index.h"
-#include "j_shader_modules_vert.h"
-#include "j_shader_modules_frag.h"
+#include "r_descriptor_layout_buffer_vert.h"
+#include "r_descriptor_layout_buffer_frag.h"
 #include <glm/glm.hpp>
+#include <array>
 namespace Series
 {
 	namespace r_descriptor_layout_buffer
 	{
-		struct Vertex
-		{
-			glm::vec2 Pos;
-			glm::vec3 Color;
+		struct Vertex {
+			glm::vec2 pos;
+			glm::vec3 color;
+
+			static VkVertexInputBindingDescription getBindingDescription() {
+				VkVertexInputBindingDescription bindingDescription{};
+				bindingDescription.binding = 0;
+				bindingDescription.stride = sizeof(Vertex);
+				bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+				return bindingDescription;
+			}
+
+			static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+				std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+				attributeDescriptions[0].binding = 0;
+				attributeDescriptions[0].location = 0;
+				attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+				attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+				attributeDescriptions[1].binding = 0;
+				attributeDescriptions[1].location = 1;
+				attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+				attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+				return attributeDescriptions;
+			}
 		};
+
 		class VulkanApplication
 		{
 		public:
@@ -664,8 +690,8 @@ namespace Series
 			void createGraphicsPipeline()
 			{
 				// Shader module
-				VkShaderModule vertShaderModule = createShaderModule(j_shader_modules_vert, sizeof(j_shader_modules_vert));
-				VkShaderModule fragShaderModule = createShaderModule(j_shader_modules_frag, sizeof(j_shader_modules_frag));
+				VkShaderModule vertShaderModule = createShaderModule(r_descriptor_layout_buffer_vert, sizeof(r_descriptor_layout_buffer_vert));
+				VkShaderModule fragShaderModule = createShaderModule(r_descriptor_layout_buffer_frag, sizeof(r_descriptor_layout_buffer_frag));
 
 				VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 				vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -685,8 +711,14 @@ namespace Series
 				// vertex input
 				VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 				vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-				vertexInputInfo.vertexBindingDescriptionCount = 0;
-				vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+				auto bindingDescription = Vertex::getBindingDescription();
+				auto attributeDescriptions = Vertex::getAttributeDescriptions();
+
+				vertexInputInfo.vertexBindingDescriptionCount = 1;
+				vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+				vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+				vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 				VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 				inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
