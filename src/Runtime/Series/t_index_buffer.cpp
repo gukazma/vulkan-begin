@@ -1200,6 +1200,10 @@ namespace Series
 				vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
 				vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
 
+
+				vkDestroyBuffer(m_Device, m_IndexBuffer, nullptr);
+				vkFreeMemory(m_Device, m_IndexBufferMemory, nullptr);
+
 				vkDestroyBuffer(m_Device, m_VertexBuffer, nullptr);
 				vkFreeMemory(m_Device, m_VertexBufferMemory, nullptr);
 
