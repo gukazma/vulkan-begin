@@ -11,18 +11,44 @@
 #include <algorithm>
 #include <set>
 #include "index.h"
-#include "j_shader_modules_vert.h"
-#include "j_shader_modules_frag.h"
+#include "r_descriptor_layout_buffer_vert.h"
+#include "r_descriptor_layout_buffer_frag.h"
 #include <glm/glm.hpp>
+#include <array>
 namespace Series
 {
 	namespace t_index_buffer
 	{
-		struct Vertex
-		{
-			glm::vec2 Pos;
-			glm::vec3 Color;
+		struct Vertex {
+			glm::vec2 pos;
+			glm::vec3 color;
+
+			static VkVertexInputBindingDescription getBindingDescription() {
+				VkVertexInputBindingDescription bindingDescription{};
+				bindingDescription.binding = 0;
+				bindingDescription.stride = sizeof(Vertex);
+				bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+				return bindingDescription;
+			}
+
+			static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+				std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+				attributeDescriptions[0].binding = 0;
+				attributeDescriptions[0].location = 0;
+				attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+				attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+				attributeDescriptions[1].binding = 0;
+				attributeDescriptions[1].location = 1;
+				attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+				attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+				return attributeDescriptions;
+			}
 		};
+
 		class VulkanApplication
 		{
 		public:
@@ -83,7 +109,6 @@ namespace Series
 			const int MAX_FRAMES_IN_FLIGHT = 2;
 			size_t m_CurrentFrame = 0;
 			bool m_FramebufferResized = false;
-
 			const std::vector<Vertex> m_Vertices = {
 				{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
 				{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -96,7 +121,8 @@ namespace Series
 			};
 			VkBuffer m_VertexBuffer;
 			VkDeviceMemory m_VertexBufferMemory;
-
+			VkBuffer m_IndexBuffer;
+			VkDeviceMemory m_IndexBufferMemory;
 
 			void initWindow() {
 				glfwInit();
@@ -122,6 +148,7 @@ namespace Series
 				createFramebuffers();
 				createCommandPool();
 				createVertexBuffer();
+				createIndexBuffer();
 				createCommandBuffers();
 				createSyncObjects();
 			}
@@ -670,8 +697,8 @@ namespace Series
 			void createGraphicsPipeline()
 			{
 				// Shader module
-				VkShaderModule vertShaderModule = createShaderModule(j_shader_modules_vert, sizeof(j_shader_modules_vert));
-				VkShaderModule fragShaderModule = createShaderModule(j_shader_modules_frag, sizeof(j_shader_modules_frag));
+				VkShaderModule vertShaderModule = createShaderModule(r_descriptor_layout_buffer_vert, sizeof(r_descriptor_layout_buffer_vert));
+				VkShaderModule fragShaderModule = createShaderModule(r_descriptor_layout_buffer_frag, sizeof(r_descriptor_layout_buffer_frag));
 
 				VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 				vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -691,8 +718,14 @@ namespace Series
 				// vertex input
 				VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 				vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-				vertexInputInfo.vertexBindingDescriptionCount = 0;
-				vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+				auto bindingDescription = Vertex::getBindingDescription();
+				auto attributeDescriptions = Vertex::getAttributeDescriptions();
+
+				vertexInputInfo.vertexBindingDescriptionCount = 1;
+				vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+				vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+				vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 				VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 				inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -835,7 +868,7 @@ namespace Series
 			}
 			// **************************** create frame buffers ***************************
 
-			
+
 
 			// **************************** create command pool ***************************
 			void createCommandPool()
@@ -875,6 +908,26 @@ namespace Series
 				vkFreeMemory(m_Device, stagingBufferMemory, nullptr);
 			}
 
+			void createIndexBuffer() {
+				VkDeviceSize bufferSize = sizeof(m_Indices[0]) * m_Indices.size();
+
+				VkBuffer stagingBuffer;
+				VkDeviceMemory stagingBufferMemory;
+				createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+				void* data;
+				vkMapMemory(m_Device, stagingBufferMemory, 0, bufferSize, 0, &data);
+				memcpy(data, m_Indices.data(), (size_t)bufferSize);
+				vkUnmapMemory(m_Device, stagingBufferMemory);
+
+				createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_IndexBuffer, m_IndexBufferMemory);
+
+				copyBuffer(stagingBuffer, m_IndexBuffer, bufferSize);
+
+				vkDestroyBuffer(m_Device, stagingBuffer, nullptr);
+				vkFreeMemory(m_Device, stagingBufferMemory, nullptr);
+			}
+
 			void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 			{
 				VkBufferCreateInfo bufferInfo = {};
@@ -890,7 +943,7 @@ namespace Series
 
 				VkMemoryRequirements memRequirements;
 				vkGetBufferMemoryRequirements(m_Device, buffer, &memRequirements);
-				
+
 				VkMemoryAllocateInfo  allocInfo = {};
 				allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 				allocInfo.allocationSize = memRequirements.size;
@@ -920,15 +973,16 @@ namespace Series
 				beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
 				vkBeginCommandBuffer(commandBuffer, &beginInfo);
-					
+
 				VkBufferCopy copyBuffer = {};
 				copyBuffer.size = size;
 				vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyBuffer);
 
 				vkEndCommandBuffer(commandBuffer);
 
-				VkSubmitInfo submitInfo = {};
+				VkSubmitInfo submitInfo{};
 				submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+				submitInfo.commandBufferCount = 1;
 				submitInfo.pCommandBuffers = &commandBuffer;
 
 				vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
@@ -1008,8 +1062,9 @@ namespace Series
 				VkBuffer vertexBuffers[] = { m_VertexBuffer };
 				VkDeviceSize offsets[] = { 0 };
 				vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+				vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-				vkCmdDraw(commandBuffer, static_cast<uint32_t>(m_Vertices.size()), 1, 0, 0);
+				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
 
 				vkCmdEndRenderPass(commandBuffer);
 
@@ -1136,11 +1191,11 @@ namespace Series
 				vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
 			}
 
-			
+
 
 			void cleanup() {
 				cleanupSwapChain();
-				
+
 				vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 				vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
 				vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
