@@ -1,8 +1,6 @@
 [Bb]uild
 out
 
-.vscode/
-
 .idea/
 
 .cache
