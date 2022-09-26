@@ -21,7 +21,7 @@ namespace Series
 			}
 		private:
 			GLFWwindow* m_Window;
-			const int m_Width = 800;
+			const int m_Width  = 800;
 			const int m_Height = 600;
 
 			VkInstance m_VulkanInstance;
@@ -51,25 +51,31 @@ namespace Series
 			}
 
 			void createInstance() {
-				VkApplicationInfo appInfo = {};
-				appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-				appInfo.pApplicationName = "Vulkan Aplication";
-				appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-				appInfo.pEngineName = "No Engine";
-				appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-				appInfo.apiVersion = VK_API_VERSION_1_0;
+				VkApplicationInfo appInfo                    = {};
+				                  appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+				                  appInfo.pApplicationName   = "Vulkan Aplication";
+				                  appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+				                  appInfo.pEngineName        = "No Engine";
+				                  appInfo.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
+				                  appInfo.apiVersion         = VK_API_VERSION_1_0;
 
-				VkInstanceCreateInfo createInfo = {};
-				createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-				createInfo.pApplicationInfo = &appInfo;
 
 				uint32_t glfwExtensionCount = 0;
 				const char** glfwExtensions;
-
 				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-				createInfo.enabledExtensionCount = glfwExtensionCount;
-				createInfo.ppEnabledExtensionNames = glfwExtensions;
-				createInfo.enabledLayerCount = 0;
+				std::cout << "glfw requried instance extensions:" << std::endl;
+				for (int i = 0; i < glfwExtensionCount; i++) {
+					std::cout << "\t" << glfwExtensions[i] << std::endl;
+				}
+
+				VkInstanceCreateInfo createInfo                         = {};
+				                     createInfo.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+				                     createInfo.pApplicationInfo        = &appInfo;
+				                     createInfo.enabledExtensionCount   = glfwExtensionCount;
+				                     createInfo.ppEnabledExtensionNames = glfwExtensions;
+				                     createInfo.enabledLayerCount       = 0;
+
+				
 
 				VkResult result = vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance);
 
