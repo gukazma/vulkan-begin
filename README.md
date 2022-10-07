@@ -49,3 +49,6 @@ sudo apt-get install libsdl2-dev libx11-dev vulkan-sdk
 clion .
 ```
 **build  ``shaderCompile`` first!!!**
+
+
+[My Notes](./docs/README.md)
