@@ -21,3 +21,20 @@ it needs the HWND and HMODULE handles on Windows.
 
 The ``glfwCreateWindowSurface`` function performs exactly this operation with
 a different implementation for each platform.
+
+## Swap chain
+
+There are basically three kinds of properties we need to check:
+* Basic surface capabilities (min/max number of images in swap chain, min/-
+max width and height of images)
+* Surface formats (pixel format, color space)
+* Available presentation modes
+
+```cpp
+struct SwapChainSupportDetails
+{
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> fromats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+```
