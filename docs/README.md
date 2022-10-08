@@ -1,6 +1,6 @@
 # Vulkan Tutorial
 
-![process](./imgs/process.png)
+![process](./imgs/vulkan%20process.png)
 
 ## Vulkan Instance
 
@@ -31,7 +31,7 @@ There are basically three kinds of properties we need to check:
 max width and height of images)
 * Surface formats (pixel format, color space)
 * Available presentation modes
-
+> image usage;image sharing mode;pretransform;composite Alpha;
 ```cpp
 struct SwapChainSupportDetails
 {
