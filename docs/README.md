@@ -42,3 +42,6 @@ struct SwapChainSupportDetails
 ```
 
 > The images were created by the implementation for the swap chain and they will be automatically cleaned up once the swap chain has been destroyed, therefore we don’t need to add any cleanup code.
+
+## Image Views
+It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels.The components field of createInfo allows you to swizzle the color channels around.
