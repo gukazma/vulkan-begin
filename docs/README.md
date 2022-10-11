@@ -45,3 +45,7 @@ struct SwapChainSupportDetails
 
 ## Image Views
 It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels.The components field of createInfo allows you to swizzle the color channels around.
+
+
+## Shader Modules
+Shader modules are just a thin wrapper around the shader bytecode.To actually use the shaders we’ll need to assign them to a specific pipeline stage through VkPipelineShaderStageCreateInfo structures as part of the actual pipeline creation process.
