@@ -58,3 +58,8 @@ The uniform and push values referenced by the shader that can be updated at draw
 
 ## Render pass
 The attachments referenced by the pipeline stages and their usage.
+
+## Framebuffers
+The attachments specified during render pass creation are bound by wrapping them into a VkFramebuffer object.
+A framebuffer object references all of the VkImageView objects that represent the attachments.
+The image that we have to use for the attachment depends on which image the swap chain returns when we retrieve one for presentation. **That means that we have to create a framebuffer for all of the images in the swap chain and use the one that corresponds to the retrieved image at drawing time.**
