@@ -615,7 +615,7 @@ namespace Series
 			// **************************** create graphics pipeline ***************************
 			void createGraphicsPipeline()
 			{
-				// Shader module
+				/* Shader stages */
 				VkShaderModule vertShaderModule = createShaderModule(j_shader_modules_vert, sizeof(j_shader_modules_vert));
 				VkShaderModule fragShaderModule = createShaderModule(j_shader_modules_frag, sizeof(j_shader_modules_frag));
 
@@ -632,8 +632,9 @@ namespace Series
 				fragShaderStageInfo.pName = "main";
 
 				VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+				/* Shader stages */
 
-
+				/* Fixed function */
 				// vertex input
 				VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 				vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -691,6 +692,7 @@ namespace Series
 				colorBlending.blendConstants[1] = 0.0f;
 				colorBlending.blendConstants[2] = 0.0f;
 				colorBlending.blendConstants[3] = 0.0f;
+				/* Fixed function */
 
 				VkDynamicState dynamicStates[] = {
 					VK_DYNAMIC_STATE_VIEWPORT,
@@ -702,16 +704,18 @@ namespace Series
 				dynamicState.dynamicStateCount = 2;
 				dynamicState.pDynamicStates = dynamicStates;
 
+				/* Pipeline layout */
 				VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 				pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 				pipelineLayoutInfo.setLayoutCount = 0;
 				pipelineLayoutInfo.pushConstantRangeCount = 0;
-
 				if (vkCreatePipelineLayout(m_Device, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
 				{
 					throw std::runtime_error("failed to create shader module!");
 				}
+				/* Pipeline layout */
 
+				
 				VkGraphicsPipelineCreateInfo pipelineInfo = {};
 				pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 				pipelineInfo.stageCount = 2;

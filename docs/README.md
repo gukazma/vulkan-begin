@@ -46,6 +46,15 @@ struct SwapChainSupportDetails
 ## Image Views
 It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels.The components field of createInfo allows you to swizzle the color channels around.
 
+## Shader stages
+The ``shader modules`` that define the functionality of the programmable stages of the graphics pipeline. ``Shader modules`` are just a thin wrapper around the shader bytecode.To actually use the shaders we’ll need to assign them to a specific pipeline stage through ``VkPipelineShaderStageCreateInfo`` structures as part of the actual pipeline creation process.
 
-## Shader Modules
-Shader modules are just a thin wrapper around the shader bytecode.To actually use the shaders we’ll need to assign them to a specific pipeline stage through VkPipelineShaderStageCreateInfo structures as part of the actual pipeline creation process.
+## Fixed-function state
+All of the structures that define the fixed-function stages of the pipeline, like input assembly, rasterizer, viewport and color
+blending.
+
+## Pipeline layout
+The uniform and push values referenced by the shader that can be updated at draw time.
+
+## Render pass
+The attachments referenced by the pipeline stages and their usage.
