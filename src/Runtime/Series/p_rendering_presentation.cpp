@@ -1,3 +1,4 @@
+#include "VulkanLib/VulkanInstance.h"
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
@@ -86,7 +87,7 @@ namespace Series
 			}
 
 			void initVulkan() {
-				createInstance();
+				createVulkan();
 				setupDebugCallback();
 				createSurface();
 				pickPhysicalDevice();
@@ -111,49 +112,6 @@ namespace Series
 				vkDeviceWaitIdle(m_Device);
 			}
 
-
-			// **************************** create instance **************************************
-			void createInstance() {
-				// if enable ValidataionLayers but check found not support, throw error!
-				if (enableValidationLayers && !checkValidationLayerSupport())
-				{
-					throw std::runtime_error("validation layers requested, but not available");
-				}
-
-				VkApplicationInfo appInfo = {};
-				appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-				appInfo.pApplicationName = "Vulkan Aplication";
-				appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-				appInfo.pEngineName = "No Engine";
-				appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-				appInfo.apiVersion = VK_API_VERSION_1_0;
-
-				VkInstanceCreateInfo createInfo = {};
-				createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-				createInfo.pApplicationInfo = &appInfo;
-				if (enableValidationLayers)
-				{
-					createInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
-					createInfo.ppEnabledLayerNames = m_ValidationLayers.data();
-				}
-				else
-				{
-					createInfo.enabledLayerCount = 0;
-				}
-
-				auto extensions = getRequiredExtensions();
-				createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-				createInfo.ppEnabledExtensionNames = extensions.data();
-
-				VkResult result = vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance);
-
-				if (result != VK_SUCCESS)
-				{
-					throw std::runtime_error("failed to create instance!");
-				}
-			}
-
-
 			std::vector<const char*> getRequiredExtensions()
 			{
 				uint32_t glfwExtensionCount = 0;
@@ -171,7 +129,11 @@ namespace Series
 			}
 
 			// **************************** create instance **************************************
-
+			void createVulkan()
+			{
+				VulkanLib::VulkanInstance::PublicSingleton::getInstance().Create(getRequiredExtensions());
+				m_VulkanInstance = VulkanLib::VulkanInstance::PublicSingleton::getInstance().GetVKHandle();
+			}
 			// **************************** setup validation layer *******************************
 			// Check validation layer whether support?
 			bool checkValidationLayerSupport() {

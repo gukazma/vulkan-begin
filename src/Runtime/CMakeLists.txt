@@ -19,6 +19,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
                 glfw
                 Vulkan::Vulkan
                 glm::glm
+                cpp-utilities::singleton
           )
 
 target_include_directories(

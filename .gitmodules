@@ -7,3 +7,6 @@
 [submodule "src/Vendors/glm"]
 	path = src/Vendors/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "src/Vendors/cpp-utilities"]
+	path = src/Vendors/cpp-utilities
+	url = https://github.com/StoneHappy/cpp-utilities.git

@@ -27,3 +27,8 @@ if(NOT TARGET glm)
     set_target_properties(glm_static PROPERTIES FOLDER Vendors/glm)
     set_target_properties(uninstall PROPERTIES FOLDER Vendors/glm)
 endif()
+
+
+if(NOT TARGET cpp-utilities-algorithm)
+    add_subdirectory(cpp-utilities)
+endif()

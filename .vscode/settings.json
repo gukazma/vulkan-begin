@@ -5,6 +5,6 @@
     ],
     "cmake.generator": "Ninja",
     "cmake.debugConfig": {
-        "args": ["--gtest_filter=vulkanSeries.c_instance"]
+        "args": ["--gtest_filter=vulkanSeries.p_rendering_presentation"]
     }
 }
