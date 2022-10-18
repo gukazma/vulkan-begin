@@ -1,6 +1,6 @@
 # Vulkan Tutorial
 
-![process](./imgs/vulkan%20process.png)
+![process](./imgs/InitializeVulkan.png)
 
 ## Vulkan Instance
 
