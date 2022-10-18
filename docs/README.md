@@ -63,3 +63,12 @@ The attachments referenced by the pipeline stages and their usage.
 The attachments specified during render pass creation are bound by wrapping them into a VkFramebuffer object.
 A framebuffer object references all of the VkImageView objects that represent the attachments.
 The image that we have to use for the attachment depends on which image the swap chain returns when we retrieve one for presentation. **That means that we have to create a framebuffer for all of the images in the swap chain and use the one that corresponds to the retrieved image at drawing time.**
+
+## Cammond pool
+Command pools manage the memory that is used to store the buffers and command buffers are allocated from them.
+
+## Command Buffer
+You have to record all of the operations you want to perform in command buffer objects. The advantage of this is that when we are ready to tell the Vulkan what we want to do, all of the commands are submitted together and Vulkan can more efficiently process the commands since all of them are available together. In addition, this allows command recording to happen in multiple threads if so desired.
+
+## Synchronization
+Semaphores: the waiting only happens on the GPU. The CPU continues running without blocking.Fences:  the host(CPU) won't do anything except wait until execution has finished.
