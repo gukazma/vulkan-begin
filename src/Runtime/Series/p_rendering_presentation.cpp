@@ -234,10 +234,6 @@ namespace Series
 			// **************************** create surface *******************************
 			void createSurface()
 			{
-				// if (glfwCreateWindowSurface(m_VulkanInstance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
-				// {
-				// 	throw std::runtime_error("failed to create window surface!");
-				// }
 				if (VulkanLib::VulkanInstance::getInstance().SetupGLFWSurface(m_Window) != VK_SUCCESS)
 				{
 					throw std::runtime_error("failed to create window surface!");
@@ -248,23 +244,7 @@ namespace Series
 
 			// **************************** pick physical device *************************
 			void pickPhysicalDevice() {
-				uint32_t deviceCount = 0;
-				vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, nullptr);
-
-				if (deviceCount == 0) {
-					throw std::runtime_error("failed to find GPUs with Vulkan support!");
-				}
-
-				std::vector<VkPhysicalDevice> devices(deviceCount);
-				vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, devices.data());
-
-				for (const auto& device : devices) {
-					if (isDeviceSuitable(device)) {
-						m_PhysicalDevice = device;
-						break;
-					}
-				}
-
+				m_PhysicalDevice = VulkanLib::VulkanInstance::getInstance().PickPhysicalDevice(m_DeviceExtensions);
 				if (m_PhysicalDevice == VK_NULL_HANDLE) {
 					throw std::runtime_error("failed to find a suitable GPU!");
 				}
