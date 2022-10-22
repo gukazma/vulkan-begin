@@ -131,8 +131,8 @@ namespace Series
 			// **************************** create instance **************************************
 			void createVulkan()
 			{
-				VulkanLib::VulkanInstance::PublicSingleton::getInstance().Create(getRequiredExtensions());
-				m_VulkanInstance = VulkanLib::VulkanInstance::PublicSingleton::getInstance().GetVKHandle();
+				VulkanLib::VulkanInstance::PublicSingleton::getInstance().create(getRequiredExtensions());
+				m_VulkanInstance = VulkanLib::VulkanInstance::PublicSingleton::getInstance().getVKHandle();
 			}
 			// **************************** setup validation layer *******************************
 			// Check validation layer whether support?
@@ -214,22 +214,22 @@ namespace Series
 			// **************************** create surface *******************************
 			void createSurface()
 			{
-				if (VulkanLib::VulkanInstance::getInstance().SetupGLFWSurface(m_Window) != VK_SUCCESS)
+				if (VulkanLib::VulkanInstance::getInstance().setupGLFWSurface(m_Window) != VK_SUCCESS)
 				{
 					throw std::runtime_error("failed to create window surface!");
 				}
-				m_Surface = VulkanLib::VulkanInstance::getInstance().GetVKSurfaceHandle();
+				m_Surface = VulkanLib::VulkanInstance::getInstance().getVKSurfaceHandle();
 			}
 			// **************************** create surface *******************************
 
 			// **************************** pick physical device *************************
 			void pickPhysicalDevice() {
-				m_PhysicalDevice = VulkanLib::VulkanInstance::getInstance().PickPhysicalDevice(m_DeviceExtensions);
+				m_PhysicalDevice = VulkanLib::VulkanInstance::getInstance().pickPhysicalDevice(m_DeviceExtensions);
 				if (m_PhysicalDevice == VK_NULL_HANDLE) {
 					throw std::runtime_error("failed to find a suitable GPU!");
 				}
 			}
-			
+
 			int rateDeviceSuitability(VkPhysicalDevice device) {
 				VkPhysicalDeviceProperties deviceProperties;
 				VkPhysicalDeviceFeatures deviceFeatures;
@@ -335,7 +335,7 @@ namespace Series
 				}
 
 				vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
-				vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_PresentQueue);
+				vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &m_PresentQueue);
 			}
 			// **************************** create logical device ************************
 

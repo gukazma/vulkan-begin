@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug",
             "program": "${workspaceFolder}/out/bin/vulkan-begin.exe",
-            "args": ["--gtest_filter=vulkanSeries.t_index_buffer"],
+            "args": ["--gtest_filter=vulkanSeries.p_rendering_presentation"],
             "cwd": "${workspaceFolder}/out/bin"
         }
     ]

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vulkan/vulkan_core.h>
 namespace VulkanLib {
-    void VulkanInstance::Create(const char* pAppName, uint32_t pAppVersion, const char* pEngineName, uint32_t pEngineVersion, uint32_t pVulkanAPIVersion,const std::vector<const char*> pExtensions)
+    void VulkanInstance::create(const char* pAppName, uint32_t pAppVersion, const char* pEngineName, uint32_t pEngineVersion, uint32_t pVulkanAPIVersion,const std::vector<const char*> pExtensions)
     {
         VkApplicationInfo appInfo = {};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -30,7 +30,7 @@ namespace VulkanLib {
         isCreated = true;
     }
 
-    void VulkanInstance::Create(const std::vector<const char*> pExtensions)
+    void VulkanInstance::create(const std::vector<const char*> pExtensions)
     {
         VkApplicationInfo appInfo                    = {};
                           appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -58,12 +58,12 @@ namespace VulkanLib {
         isCreated = true;
     }
 
-    void VulkanInstance::Destory()
+    void VulkanInstance::destory()
     {
         if (!isCreated) VULKAN_ERROR("std::string_view msg");
     }
 
-    VkInstance VulkanInstance::GetVKHandle() 
+    VkInstance VulkanInstance::getVKHandle() 
     {
         if (!isCreated) 
         {
@@ -73,20 +73,20 @@ namespace VulkanLib {
         return m_VulkanInstance;
     }
 
-    bool VulkanInstance::SetupGLFWSurface(GLFWwindow* pWindow)
+    bool VulkanInstance::setupGLFWSurface(GLFWwindow* pWindow)
     {
         return glfwCreateWindowSurface(m_VulkanInstance, pWindow, nullptr, &m_Surface);
     }
-    VkSurfaceKHR VulkanInstance::GetVKSurfaceHandle()
+    VkSurfaceKHR VulkanInstance::getVKSurfaceHandle()
     {
         return m_Surface;
     }
-    VkPhysicalDevice VulkanInstance::GetVKPhyscialDeviceHandle()
+    VkPhysicalDevice VulkanInstance::getVKPhyscialDeviceHandle()
     {
         return m_PhysicalDevice;
     }
 
-    VkPhysicalDevice VulkanInstance::PickPhysicalDevice(std::vector<const char*> pDeviceExtensions)
+    VkPhysicalDevice VulkanInstance::pickPhysicalDevice(std::vector<const char*> pDeviceExtensions)
     {
         m_DeviceExtensions = pDeviceExtensions;
         uint32_t deviceCount = 0;
