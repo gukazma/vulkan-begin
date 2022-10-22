@@ -1,5 +1,6 @@
 #include "VulkanInstance.h"
 #include <iostream>
+#include <vulkan/vulkan_core.h>
 namespace VulkanLib {
     void VulkanInstance::Create(const char* pAppName, uint32_t pAppVersion, const char* pEngineName, uint32_t pEngineVersion, uint32_t pVulkanAPIVersion,const std::vector<const char*> pExtensions)
     {
@@ -71,4 +72,14 @@ namespace VulkanLib {
         }
         return m_VulkanInstance;
     }
+
+    bool VulkanInstance::SetupGLFWSurface(GLFWwindow* pWindow)
+    {
+        return glfwCreateWindowSurface(m_VulkanInstance, pWindow, nullptr, &m_Surface);
+    }
+    VkSurfaceKHR VulkanInstance::GetVKSurfaceHandle()
+    {
+        return m_Surface;
+    }
+
 }

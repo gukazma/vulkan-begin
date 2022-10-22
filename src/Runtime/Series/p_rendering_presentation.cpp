@@ -234,10 +234,15 @@ namespace Series
 			// **************************** create surface *******************************
 			void createSurface()
 			{
-				if (glfwCreateWindowSurface(m_VulkanInstance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
+				// if (glfwCreateWindowSurface(m_VulkanInstance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
+				// {
+				// 	throw std::runtime_error("failed to create window surface!");
+				// }
+				if (VulkanLib::VulkanInstance::getInstance().SetupGLFWSurface(m_Window) != VK_SUCCESS)
 				{
 					throw std::runtime_error("failed to create window surface!");
 				}
+				m_Surface = VulkanLib::VulkanInstance::getInstance().GetVKSurfaceHandle();
 			}
 			// **************************** create surface *******************************
 
