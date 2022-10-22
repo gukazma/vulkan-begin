@@ -131,8 +131,8 @@ namespace Series
 			// **************************** create instance **************************************
 			void createVulkan()
 			{
-				VulkanLib::VulkanInstance::PublicSingleton::getInstance().create(getRequiredExtensions());
-				m_VulkanInstance = VulkanLib::VulkanInstance::PublicSingleton::getInstance().getVKHandle();
+				VulkanLib::VulkanInstance::PublicSingleton::getInstance()->create(getRequiredExtensions());
+				m_VulkanInstance = VulkanLib::VulkanInstance::PublicSingleton::getInstance()->getVKHandle();
 			}
 			// **************************** setup validation layer *******************************
 			// Check validation layer whether support?
@@ -214,17 +214,17 @@ namespace Series
 			// **************************** create surface *******************************
 			void createSurface()
 			{
-				if (VulkanLib::VulkanInstance::getInstance().setupGLFWSurface(m_Window) != VK_SUCCESS)
+				if (VulkanLib::VulkanInstance::getInstance()->setupGLFWSurface(m_Window) != VK_SUCCESS)
 				{
 					throw std::runtime_error("failed to create window surface!");
 				}
-				m_Surface = VulkanLib::VulkanInstance::getInstance().getVKSurfaceHandle();
+				m_Surface = VulkanLib::VulkanInstance::getInstance()->getVKSurfaceHandle();
 			}
 			// **************************** create surface *******************************
 
 			// **************************** pick physical device *************************
 			void pickPhysicalDevice() {
-				m_PhysicalDevice = VulkanLib::VulkanInstance::getInstance().pickPhysicalDevice(m_DeviceExtensions);
+				m_PhysicalDevice = VulkanLib::VulkanInstance::getInstance()->pickPhysicalDevice(m_DeviceExtensions);
 				if (m_PhysicalDevice == VK_NULL_HANDLE) {
 					throw std::runtime_error("failed to find a suitable GPU!");
 				}
@@ -898,8 +898,7 @@ namespace Series
 				if (enableValidationLayers) {
 					destroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
 				}
-				vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
-				vkDestroyInstance(m_VulkanInstance, nullptr);
+				VulkanLib::VulkanInstance::getInstance()->deconstruct();
 				glfwDestroyWindow(m_Window);
 				glfwTerminate();
 			}

@@ -58,11 +58,6 @@ namespace VulkanLib {
         isCreated = true;
     }
 
-    void VulkanInstance::destory()
-    {
-        if (!isCreated) VULKAN_ERROR("std::string_view msg");
-    }
-
     VkInstance VulkanInstance::getVKHandle() 
     {
         if (!isCreated) 
@@ -204,5 +199,12 @@ namespace VulkanLib {
         }
 
         return details;
+    }
+
+    VulkanInstance::~VulkanInstance()
+    {
+        if (!isCreated) return;
+        vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
+        vkDestroyInstance(m_VulkanInstance, nullptr);
     }
 }

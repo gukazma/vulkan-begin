@@ -30,13 +30,12 @@ namespace VulkanLib {
 
     public:
         VulkanInstance() = default;
-        ~VulkanInstance() = default;
+        ~VulkanInstance();
         void create(const char* pAppName, uint32_t pAppVersion, const char* pEngineName, uint32_t pEngineVersion, uint32_t pVulkanAPIVersion,const std::vector<const char*> pExtensions);
         void create(const std::vector<const char*> pExtensions);
         VkInstance getVKHandle();
         VkSurfaceKHR getVKSurfaceHandle();
         VkPhysicalDevice getVKPhyscialDeviceHandle();
-        void destory();
         bool setupGLFWSurface(GLFWwindow* pWindow);
 
         VkPhysicalDevice pickPhysicalDevice(std::vector<const char*> pDeviceExtensions);
