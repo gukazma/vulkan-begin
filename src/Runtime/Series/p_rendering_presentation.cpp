@@ -162,26 +162,6 @@ namespace Series
 				return true;
 			}
 
-			// **************************** setup validation layer *******************************
-			bool checkDeviceExtensionSupport(VkPhysicalDevice device)
-			{
-				uint32_t extensionCount = 0;
-				vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-				std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-				vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-				std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
-
-				for (auto& extension : availableExtensions)
-				{
-					requiredExtensions.erase(extension.extensionName);
-				}
-
-				return requiredExtensions.empty();
-			}
-
-
 			static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 				VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 				VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -249,21 +229,7 @@ namespace Series
 					throw std::runtime_error("failed to find a suitable GPU!");
 				}
 			}
-			bool isDeviceSuitable(VkPhysicalDevice device) {
-				QueueFamilyIndices indices = findQueueFamilies(device);
-
-				bool extensionsSupported = checkDeviceExtensionSupport(device);
-
-				bool swapChainAdequate = false;
-				if (extensionsSupported)
-				{
-					SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
-
-					swapChainAdequate = !swapChainSupport.fromats.empty() && !swapChainSupport.presentModes.empty();
-				}
-
-				return indices.isComplete() && extensionsSupported && swapChainAdequate;
-			}
+			
 			int rateDeviceSuitability(VkPhysicalDevice device) {
 				VkPhysicalDeviceProperties deviceProperties;
 				VkPhysicalDeviceFeatures deviceFeatures;
