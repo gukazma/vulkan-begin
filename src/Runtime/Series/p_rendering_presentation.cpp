@@ -1,4 +1,6 @@
+#include "VulkanLib/VulkanDevice.h"
 #include "VulkanLib/VulkanInstance.h"
+#include <memory>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
@@ -77,6 +79,7 @@ namespace Series
 			const int MAX_FRAMES_IN_FLIGHT = 2;
 			size_t m_CurrentFrame = 0;
 
+			std::shared_ptr<VulkanLib::VulkanDevice> m_VulkanDevice;
 			void initWindow() {
 				glfwInit();
 
@@ -293,49 +296,13 @@ namespace Series
 
 			// **************************** create logical device ************************
 			void createLogicalDevice() {
-				QueueFamilyIndices indices = findQueueFamilies(m_PhysicalDevice);
-
-				std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+				VulkanLib::VulkanInstance::QueueFamilyIndices indices = VulkanLib::VulkanInstance::getInstance()->findQueueFamilies(m_PhysicalDevice);
 				std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+				m_VulkanDevice = std::make_shared<VulkanLib::VulkanDevice>(uniqueQueueFamilies, m_DeviceExtensions);
 
-				float queuePriority = 1.0f;
-				for (auto queueFamily : uniqueQueueFamilies)
-				{
-					VkDeviceQueueCreateInfo queueCreateInfo{};
-					queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-					queueCreateInfo.queueFamilyIndex = queueFamily;
-					queueCreateInfo.queueCount = 1;
-					queueCreateInfo.pQueuePriorities = &queuePriority;
-					queueCreateInfos.push_back(queueCreateInfo);
-				}
-
-
-				VkPhysicalDeviceFeatures deviceFeatures = {};
-				VkDeviceCreateInfo createInfo = {};
-				createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-				createInfo.queueCreateInfoCount = queueCreateInfos.size();
-				createInfo.pQueueCreateInfos = queueCreateInfos.data();
-				createInfo.pEnabledFeatures = &deviceFeatures;
-				createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
-				createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
-
-				if (enableValidationLayers)
-				{
-					createInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
-					createInfo.ppEnabledLayerNames = m_ValidationLayers.data();
-				}
-				else
-				{
-					createInfo.enabledLayerCount = 0;
-				}
-
-				if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device) != VK_SUCCESS)
-				{
-					throw std::runtime_error("failed to create logical device!");
-				}
-
-				vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
-				vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &m_PresentQueue);
+				m_Device = m_VulkanDevice->m_Device;
+				m_GraphicsQueue = m_VulkanDevice->m_GraphicsQueue;
+				m_PresentQueue = m_VulkanDevice->m_PresentQueue;
 			}
 			// **************************** create logical device ************************
 

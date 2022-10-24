@@ -40,7 +40,6 @@ namespace VulkanLib {
 
         VkPhysicalDevice pickPhysicalDevice(std::vector<const char*> pDeviceExtensions);
 
-    private:
         bool isDeviceSuitable(VkPhysicalDevice device);
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);
@@ -48,7 +47,6 @@ namespace VulkanLib {
         bool isCreated = false;
         VkInstance m_VulkanInstance;
         VkSurfaceKHR m_Surface;
-        VkPhysicalDevice m_PhysicalDevice;
 
         std::vector<const char*> m_Extensions;
         std::vector<const char*> m_DeviceExtensions;

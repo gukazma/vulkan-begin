@@ -76,10 +76,6 @@ namespace VulkanLib {
     {
         return m_Surface;
     }
-    VkPhysicalDevice VulkanInstance::getVKPhyscialDeviceHandle()
-    {
-        return m_PhysicalDevice;
-    }
 
     VkPhysicalDevice VulkanInstance::pickPhysicalDevice(std::vector<const char*> pDeviceExtensions)
     {
@@ -96,8 +92,7 @@ namespace VulkanLib {
 
         for (const auto& device : devices) {
             if (isDeviceSuitable(device)) {
-                m_PhysicalDevice = device;
-                return m_PhysicalDevice;
+                return device;
             }
         }
     }
