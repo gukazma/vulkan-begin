@@ -4,7 +4,7 @@
 
 namespace VulkanLib {
     VulkanSwapChain::VulkanSwapChain(std::shared_ptr<VulkanDevice> pVulkanDevice)
-        : m_PhysicalDevice(pVulkanDevice->m_PhysicalDevice), m_VulkanDevice(pVulkanDevice)
+        : m_PhysicalDevice(pVulkanDevice->m_PhysicalDevice), m_VulkanDevice(pVulkanDevice), m_Device(pVulkanDevice->m_Device), m_Surface(VulkanInstance::getInstance()->m_Surface)
     {
         if (!VulkanInstance::getInstance()->isCreated) {
             throw std::runtime_error("Vulkan instance has not initialized!");
@@ -55,7 +55,7 @@ namespace VulkanLib {
 
         if (vkCreateSwapchainKHR(m_Device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to create swap chain!");
+            throw std::runtime_error("failed to create swap chain!11111");
         }
 
         vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, nullptr);
