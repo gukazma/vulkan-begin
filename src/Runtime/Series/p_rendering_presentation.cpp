@@ -1,6 +1,8 @@
 #include "VulkanLib/VulkanDevice.h"
 #include "VulkanLib/VulkanInstance.h"
+#include "VulkanLib/VulkanSwapChain.h"
 #include <memory>
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
@@ -80,6 +82,7 @@ namespace Series
 			size_t m_CurrentFrame = 0;
 
 			std::shared_ptr<VulkanLib::VulkanDevice> m_VulkanDevice;
+			std::shared_ptr<VulkanLib::VulkanSwapChain> m_VulkanSwapChain; 
 			void initWindow() {
 				glfwInit();
 
@@ -358,7 +361,7 @@ namespace Series
 					{
 						return availablePresentMode;
 					}
-					else if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+					else if (availablePresentMode == VK_PRESENT_MODE_FIFO_KHR)
 					{
 						bestMode = availablePresentMode;
 					}
@@ -383,6 +386,13 @@ namespace Series
 			}
 
 			void createSwapChain() {
+				// m_VulkanSwapChain = std::make_shared<VulkanLib::VulkanSwapChain>(m_VulkanDevice);
+
+				// m_SwapChainImages = m_VulkanSwapChain->m_SwapChainImages;
+
+				// m_SwapChainImageFormat = m_VulkanSwapChain->m_SwapChainImageFormat;
+				// m_SwapChainExtent = m_VulkanSwapChain->m_SwapChainExtent;
+				// m_SwapChain = m_VulkanSwapChain->m_SwapChain;
 				SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_PhysicalDevice);
 				VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.fromats);
 				VkPresentModeKHR presentMode = chooseSwapPresenMode(swapChainSupport.presentModes);
