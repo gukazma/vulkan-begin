@@ -72,3 +72,7 @@ You have to record all of the operations you want to perform in command buffer o
 
 ## Synchronization
 Semaphores: the waiting only happens on the GPU. The CPU continues running without blocking.Fences:  the host(CPU) won't do anything except wait until execution has finished.
+
+## Subpass dependencies
+The special value VK_SUBPASS_EXTERNAL refers to the implicit subpass before or after the render pass depending on whether it is specified in srcSubpass
+or dstSubpass.``Implicit subpass`` means "subpass not specified".
