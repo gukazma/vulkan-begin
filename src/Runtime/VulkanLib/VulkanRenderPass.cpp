@@ -49,6 +49,6 @@ namespace VulkanLib {
 
     VulkanRenderPass::~VulkanRenderPass()
     {
-        // vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
+        vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
     }
 }
