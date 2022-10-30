@@ -171,4 +171,13 @@ namespace VulkanLib {
             }
         }
     }
+    VulkanSwapChain::~VulkanSwapChain()
+    {
+        for (auto& imageview : m_SwapChainImageViews)
+        {
+            vkDestroyImageView(m_Device, imageview, nullptr);
+        }
+        vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
+    }
+
 }

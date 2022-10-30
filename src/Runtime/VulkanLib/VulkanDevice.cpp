@@ -53,7 +53,7 @@ namespace VulkanLib {
 
     VulkanDevice::~VulkanDevice()
     {
-
+        vkDestroyDevice(m_Device, nullptr);
     }
 
 }

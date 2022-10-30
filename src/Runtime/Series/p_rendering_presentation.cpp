@@ -1,5 +1,6 @@
 #include "VulkanLib/VulkanDevice.h"
 #include "VulkanLib/VulkanInstance.h"
+#include "VulkanLib/VulkanRenderPass.h"
 #include "VulkanLib/VulkanSwapChain.h"
 #include <memory>
 #include <vulkan/vulkan_core.h>
@@ -82,7 +83,9 @@ namespace Series
 			size_t m_CurrentFrame = 0;
 
 			std::shared_ptr<VulkanLib::VulkanDevice> m_VulkanDevice;
-			std::shared_ptr<VulkanLib::VulkanSwapChain> m_VulkanSwapChain; 
+			std::shared_ptr<VulkanLib::VulkanSwapChain> m_VulkanSwapChain;
+			std::shared_ptr<VulkanLib::VulkanRenderPass> m_VulkanRenderPass;
+
 			void initWindow() {
 				glfwInit();
 
@@ -94,7 +97,6 @@ namespace Series
 
 			void initVulkan() {
 				createVulkan();
-				setupDebugCallback();
 				createSurface();
 				pickPhysicalDevice();
 				createLogicalDevice();
@@ -140,83 +142,6 @@ namespace Series
 				VulkanLib::VulkanInstance::PublicSingleton::getInstance()->create(getRequiredExtensions());
 				m_VulkanInstance = VulkanLib::VulkanInstance::PublicSingleton::getInstance()->getVKHandle();
 			}
-			// **************************** setup validation layer *******************************
-			// Check validation layer whether support?
-			bool checkValidationLayerSupport() {
-				uint32_t layerCount;
-				vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-				std::vector<VkLayerProperties> availableLayers(layerCount);
-				vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-				for (const char* layerName : m_ValidationLayers)
-				{
-					bool layerFound = false;
-
-					for (const auto& layerProperties : availableLayers)
-					{
-						if (std::strcmp(layerProperties.layerName, layerName) == 0)
-						{
-							layerFound = true;
-							break;
-						}
-					}
-					if (!layerFound)
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-
-			static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-				VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-				VkDebugUtilsMessageTypeFlagsEXT messageType,
-				const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-				void* pUserData
-			)
-			{
-				std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-				return VK_FALSE;
-			}
-
-			void setupDebugCallback() {
-				if (!enableValidationLayers) return;
-
-				VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-				populateDebugMessengerCreateInfo(createInfo);
-
-				if (createDebugUtilsMessengerEXT(m_VulkanInstance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS) {
-					throw std::runtime_error("failed to set up debug messenger!");
-				}
-			}
-
-			VkResult createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
-				auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-				if (func != nullptr) {
-					return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-				}
-				else {
-					return VK_ERROR_EXTENSION_NOT_PRESENT;
-				}
-			}
-
-			void destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
-				auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-				if (func != nullptr) {
-					func(instance, debugMessenger, pAllocator);
-				}
-			}
-
-			void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
-				createInfo = {};
-				createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-				createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-				createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-				createInfo.pfnUserCallback = debugCallback;
-			}
-			// **************************** setup validation layer *******************************
-
-
 			// **************************** create surface *******************************
 			void createSurface()
 			{
@@ -234,30 +159,6 @@ namespace Series
 				if (m_PhysicalDevice == VK_NULL_HANDLE) {
 					throw std::runtime_error("failed to find a suitable GPU!");
 				}
-			}
-
-			int rateDeviceSuitability(VkPhysicalDevice device) {
-				VkPhysicalDeviceProperties deviceProperties;
-				VkPhysicalDeviceFeatures deviceFeatures;
-
-				vkGetPhysicalDeviceProperties(device, &deviceProperties);
-				vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
-
-				int score = 0;
-				// Discrete GPUs have a significant performance advantage
-				if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-					score += 1000;
-				}
-
-				// Maximum possible size of textures affects graphics quality
-				score += deviceProperties.limits.maxImageDimension2D;
-
-				// Application can't function without geometry shaders
-				if (!deviceFeatures.geometryShader) {
-					return 0;
-				}
-
-				return score;
 			}
 
 			QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -308,83 +209,6 @@ namespace Series
 				m_PresentQueue = m_VulkanDevice->m_PresentQueue;
 			}
 			// **************************** create logical device ************************
-
-			// **************************** create swap chain ****************************
-			SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
-				SwapChainSupportDetails details;
-
-				// get surface capabilities ( max/min image )
-				vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface, &details.capabilities);
-
-				// get surface format (RGB...)
-				uint32_t formatCount = 0;
-				vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, nullptr);
-
-				if (formatCount != 0)
-				{
-					details.fromats.resize(formatCount);
-					vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, details.fromats.data());
-				}
-
-				// get surface present mode (imediate / fifo ...)
-				uint32_t presentModeCount = 0;
-				vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, nullptr);
-
-				if (presentModeCount != 0)
-				{
-					details.presentModes.resize(presentModeCount);
-					vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, details.presentModes.data());
-				}
-
-				return details;
-			}
-
-			VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
-				for (const auto& avaiableFormat : availableFormats)
-				{
-					if (avaiableFormat.format == VK_FORMAT_R8G8B8A8_SRGB && avaiableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-					{
-						return avaiableFormat;
-					}
-				}
-
-				return availableFormats[0];
-			}
-
-			VkPresentModeKHR chooseSwapPresenMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
-
-				VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
-
-				for (const auto& availablePresentMode : availablePresentModes)
-				{
-					if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
-					{
-						return availablePresentMode;
-					}
-					else if (availablePresentMode == VK_PRESENT_MODE_FIFO_KHR)
-					{
-						bestMode = availablePresentMode;
-					}
-				}
-				return bestMode;
-			}
-
-			VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
-				if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
-				{
-					return capabilities.currentExtent;
-				}
-				else
-				{
-					VkExtent2D actualExtent = { m_Width, m_Height };
-
-					actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
-					actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
-
-					return actualExtent;
-				}
-			}
-
 			void createSwapChain() {
 				m_VulkanSwapChain = std::make_shared<VulkanLib::VulkanSwapChain>(m_VulkanDevice);
 
@@ -406,46 +230,8 @@ namespace Series
 
 			void createRenderPass()
 			{
-				VkAttachmentDescription colorAttachment = {};
-				colorAttachment.format = m_SwapChainImageFormat;
-				colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-				colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-				colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-				colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-				colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-				colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-				colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-				VkAttachmentReference colorAttachmentRef = {};
-				colorAttachmentRef.attachment = 0;
-				colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-				VkSubpassDescription subpass = {};
-				subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-				subpass.colorAttachmentCount = 1;
-				subpass.pColorAttachments = &colorAttachmentRef;
-
-				VkSubpassDependency dependency{};
-				dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-				dependency.dstSubpass = 0;
-				dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-				dependency.srcAccessMask = 0;
-				dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-				dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-				VkRenderPassCreateInfo renderPassInfo = {};
-				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-				renderPassInfo.attachmentCount = 1;
-				renderPassInfo.pAttachments = &colorAttachment;
-				renderPassInfo.subpassCount = 1;
-				renderPassInfo.pSubpasses = &subpass;
-				renderPassInfo.dependencyCount = 1;
-				renderPassInfo.pDependencies = &dependency;
-
-				if (vkCreateRenderPass(m_Device, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
-				{
-					throw std::runtime_error("failed to create render pass!");
-				}
+				m_VulkanRenderPass = std::make_shared<VulkanLib::VulkanRenderPass>(m_VulkanDevice->m_Device, m_VulkanSwapChain->m_SwapChainImageFormat);
+				m_RenderPass = m_VulkanRenderPass->getVkHandle();
 			}
 
 			// **************************** create graphics pipeline ***************************
@@ -788,18 +574,10 @@ namespace Series
 
 				vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 				vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
-				vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
+				m_VulkanRenderPass.reset();
+				m_VulkanSwapChain.reset();
+				m_VulkanDevice.reset();
 
-				for (auto& imageview : m_SwapChainImageViews)
-				{
-					vkDestroyImageView(m_Device, imageview, nullptr);
-				}
-				vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
-				vkDestroyDevice(m_Device, nullptr);
-
-				if (enableValidationLayers) {
-					destroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
-				}
 				VulkanLib::VulkanInstance::getInstance()->deconstruct();
 				glfwDestroyWindow(m_Window);
 				glfwTerminate();

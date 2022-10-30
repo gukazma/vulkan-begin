@@ -17,7 +17,7 @@ namespace VulkanLib {
 
     public:
         VulkanSwapChain(std::shared_ptr<VulkanDevice> pVulkanDevice);
-        ~VulkanSwapChain()=default;
+        ~VulkanSwapChain();
     public:
         uint32_t    m_Width;
         uint32_t    m_Height;
