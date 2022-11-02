@@ -3,6 +3,7 @@
 #include "VulkanLib/VulkanFramebuffer.h"
 #include "VulkanLib/VulkanGraphicsPipeline.h"
 #include "VulkanLib/VulkanInstance.h"
+#include "VulkanLib/VulkanPipelineShaderStage.h"
 #include "VulkanLib/VulkanRenderPass.h"
 #include "VulkanLib/VulkanShaderModule.h"
 #include "VulkanLib/VulkanSwapChain.h"
@@ -91,7 +92,7 @@ namespace Series
 			std::shared_ptr<VulkanLib::VulkanRenderPass> m_VulkanRenderPass;
 			std::shared_ptr<VulkanLib::VulkanGraphicsPipline> m_VulkanGraphicsPipline; 
 			std::shared_ptr<VulkanLib::VulkanFramebuffer> m_VulkanFramebuffer; 
-			std::shared_ptr<VulkanLib::VulkanCommandBuffer> m_VulkanCommandBuffer; 
+			std::shared_ptr<VulkanLib::VulkanCommandBuffer> m_VulkanCommandBuffer;
 
 			void initWindow() {
 				glfwInit();
@@ -212,21 +213,12 @@ namespace Series
 				std::shared_ptr<VulkanLib::VulkanShaderModule> vertShaderModule = std::make_shared<VulkanLib::VulkanShaderModule>(m_VulkanDevice, j_shader_modules_vert, sizeof(j_shader_modules_vert));
 				std::shared_ptr<VulkanLib::VulkanShaderModule> fragShaderModule = std::make_shared<VulkanLib::VulkanShaderModule>(m_VulkanDevice, j_shader_modules_frag, sizeof(j_shader_modules_frag));
 
-				VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-				vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-				vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-				vertShaderStageInfo.module = vertShaderModule->m_ShaderModule;
-				vertShaderStageInfo.pName = "main";
-
-				VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-				fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-				fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-				fragShaderStageInfo.module = fragShaderModule->m_ShaderModule;
-				fragShaderStageInfo.pName = "main";
-
-				std::vector<VkPipelineShaderStageCreateInfo> shaderstages  = { vertShaderStageInfo, fragShaderStageInfo };
-
-				m_VulkanGraphicsPipline = std::make_shared<VulkanLib::VulkanGraphicsPipline>(m_VulkanDevice, m_VulkanRenderPass, shaderstages, m_VulkanSwapChain);
+				VulkanLib::VulkanPipelineShaderStage vulkanPipelineShaderStage({
+					{ vertShaderModule, VK_SHADER_STAGE_VERTEX_BIT, "main" },
+					{ fragShaderModule, VK_SHADER_STAGE_FRAGMENT_BIT, "main" }
+				});
+				
+				m_VulkanGraphicsPipline = std::make_shared<VulkanLib::VulkanGraphicsPipline>(m_VulkanDevice, m_VulkanRenderPass, vulkanPipelineShaderStage, m_VulkanSwapChain);
 
 				m_GraphicsPipeline = m_VulkanGraphicsPipline->m_GraphicsPipeline;
 				m_PipelineLayout = m_VulkanGraphicsPipline->m_PipelineLayout;

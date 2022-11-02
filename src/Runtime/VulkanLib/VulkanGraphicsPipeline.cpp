@@ -3,7 +3,7 @@
 #include <vulkan/vulkan_core.h>
 
 namespace VulkanLib {
-    VulkanGraphicsPipline::VulkanGraphicsPipline(std::shared_ptr<VulkanDevice> vulkanDevice, std::shared_ptr<VulkanRenderPass> vulkanRenderPass, std::vector<VkPipelineShaderStageCreateInfo> shaderstages, std::shared_ptr<VulkanSwapChain> vulkanSwapChain)
+    VulkanGraphicsPipline::VulkanGraphicsPipline(std::shared_ptr<VulkanDevice> vulkanDevice, std::shared_ptr<VulkanRenderPass> vulkanRenderPass, VulkanLib::VulkanPipelineShaderStage shaderstage, std::shared_ptr<VulkanSwapChain> vulkanSwapChain)
         : m_Device(vulkanDevice->m_Device), m_RenderPass(vulkanRenderPass->m_RenderPass), m_SwapChainExtent(vulkanSwapChain->m_SwapChainExtent)
     {
         // vertex input
@@ -88,8 +88,8 @@ namespace VulkanLib {
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.stageCount = static_cast<uint32_t>(shaderstages.size());
-        pipelineInfo.pStages = shaderstages.data();
+        pipelineInfo.stageCount = static_cast<uint32_t>(shaderstage.m_ShaderStageInfos.size());
+        pipelineInfo.pStages = shaderstage.m_ShaderStageInfos.data();
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssembly;
         pipelineInfo.pViewportState = &viewportState;
