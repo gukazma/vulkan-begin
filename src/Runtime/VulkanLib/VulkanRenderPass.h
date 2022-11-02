@@ -12,7 +12,7 @@ namespace VulkanLib {
         {
             return m_RenderPass;
         }
-    private:
+    public:
         VkRenderPass m_RenderPass;
         VkDevice m_Device;
     };
