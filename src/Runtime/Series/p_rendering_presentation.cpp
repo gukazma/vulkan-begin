@@ -4,6 +4,7 @@
 #include "VulkanLib/VulkanGraphicsPipeline.h"
 #include "VulkanLib/VulkanInstance.h"
 #include "VulkanLib/VulkanRenderPass.h"
+#include "VulkanLib/VulkanShaderModule.h"
 #include "VulkanLib/VulkanSwapChain.h"
 #include <memory>
 #include <vulkan/vulkan_core.h>
@@ -208,19 +209,19 @@ namespace Series
 			void createGraphicsPipeline()
 			{
 				// Shader module
-				VkShaderModule vertShaderModule = createShaderModule(j_shader_modules_vert, sizeof(j_shader_modules_vert));
-				VkShaderModule fragShaderModule = createShaderModule(j_shader_modules_frag, sizeof(j_shader_modules_frag));
+				std::shared_ptr<VulkanLib::VulkanShaderModule> vertShaderModule = std::make_shared<VulkanLib::VulkanShaderModule>(m_VulkanDevice, j_shader_modules_vert, sizeof(j_shader_modules_vert));
+				std::shared_ptr<VulkanLib::VulkanShaderModule> fragShaderModule = std::make_shared<VulkanLib::VulkanShaderModule>(m_VulkanDevice, j_shader_modules_frag, sizeof(j_shader_modules_frag));
 
 				VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 				vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-				vertShaderStageInfo.module = vertShaderModule;
+				vertShaderStageInfo.module = vertShaderModule->m_ShaderModule;
 				vertShaderStageInfo.pName = "main";
 
 				VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
 				fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-				fragShaderStageInfo.module = fragShaderModule;
+				fragShaderStageInfo.module = fragShaderModule->m_ShaderModule;
 				fragShaderStageInfo.pName = "main";
 
 				std::vector<VkPipelineShaderStageCreateInfo> shaderstages  = { vertShaderStageInfo, fragShaderStageInfo };
@@ -229,8 +230,6 @@ namespace Series
 
 				m_GraphicsPipeline = m_VulkanGraphicsPipline->m_GraphicsPipeline;
 				m_PipelineLayout = m_VulkanGraphicsPipline->m_PipelineLayout;
-				vkDestroyShaderModule(m_Device, fragShaderModule, nullptr);
-				vkDestroyShaderModule(m_Device, vertShaderModule, nullptr);
 			}
 
 			VkShaderModule createShaderModule(const uint32_t* code, uint32_t size)
