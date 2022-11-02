@@ -294,16 +294,7 @@ namespace Series
 			// **************************** create command pool ***************************
 			void createCommandPool()
 			{
-				QueueFamilyIndices queueFamilyIndices = findQueueFamilies(m_PhysicalDevice);
-
-				VkCommandPoolCreateInfo poolInfo{};
-				poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-				poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-				poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
-
-				if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
-					throw std::runtime_error("failed to create command pool!");
-				}
+				m_CommandPool = m_VulkanDevice->getCommandPool();
 			}
 			// **************************** create command pool ***************************
 
@@ -452,8 +443,6 @@ namespace Series
 					vkDestroySemaphore(m_Device, m_ImageAvailableSemaphores[i], nullptr);
 					vkDestroyFence(m_Device, m_InFlightFences[i], nullptr);
 				}
-
-				vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
 
 				m_VulkanFramebuffer.reset();
 				m_VulkanGraphicsPipline.reset();

@@ -49,11 +49,28 @@ namespace VulkanLib {
 
         vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
         vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &m_PresentQueue);
+
+
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        poolInfo.queueFamilyIndex = indices.graphicsFamily.value();
+
+        if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create command pool!");
+        }
     }
 
     VulkanDevice::~VulkanDevice()
     {
+        vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
         vkDestroyDevice(m_Device, nullptr);
     }
+
+    VkCommandPool VulkanDevice::getCommandPool()
+    {
+        return m_CommandPool;
+    }
+
 
 }
