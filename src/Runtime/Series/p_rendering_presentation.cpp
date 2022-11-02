@@ -1,3 +1,4 @@
+#include "VulkanLib/VulkanCommandbuffer.h"
 #include "VulkanLib/VulkanDevice.h"
 #include "VulkanLib/VulkanFramebuffer.h"
 #include "VulkanLib/VulkanGraphicsPipeline.h"
@@ -89,6 +90,7 @@ namespace Series
 			std::shared_ptr<VulkanLib::VulkanRenderPass> m_VulkanRenderPass;
 			std::shared_ptr<VulkanLib::VulkanGraphicsPipline> m_VulkanGraphicsPipline; 
 			std::shared_ptr<VulkanLib::VulkanFramebuffer> m_VulkanFramebuffer; 
+			std::shared_ptr<VulkanLib::VulkanCommandBuffer> m_VulkanCommandBuffer; 
 
 			void initWindow() {
 				glfwInit();
@@ -300,17 +302,8 @@ namespace Series
 
 			// **************************** create command buffer ***************************
 			void createCommandBuffer() {
-				m_CommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-
-				VkCommandBufferAllocateInfo allocInfo{};
-				allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-				allocInfo.commandPool = m_CommandPool;
-				allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-				allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
-
-				if (vkAllocateCommandBuffers(m_Device, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
-					throw std::runtime_error("failed to allocate command buffers!");
-				}
+				m_VulkanCommandBuffer = std::make_shared<VulkanLib::VulkanCommandBuffer>(m_VulkanDevice);
+				m_CommandBuffers = m_VulkanCommandBuffer->m_CommandBuffers;
 			}
 
 			// **************************** create command buffer ***************************
